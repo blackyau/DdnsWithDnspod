@@ -4,7 +4,7 @@
 
 LOGIN_TOKEN="xxxxx,yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
 DOMAIN="youdomain.xx"
-
+SUB_DOMAIN="@"
 
 wlan_ip=""
 record_ip=""
@@ -24,7 +24,7 @@ get_wlan_ip()
 
 get_record_info()
 {
-	record_info=$(wget -q -O- --no-check-certificate --post-data "format=json&offset=0&length=1&login_token=${LOGIN_TOKEN}&domain=${DOMAIN}" https://dnsapi.cn/Record.List)
+	record_info=$(wget -q -O- --no-check-certificate --post-data "format=json&offset=0&length=1&login_token=${LOGIN_TOKEN}&domain=${DOMAIN}&sub_domain=${SUB_DOMAIN}" https://dnsapi.cn/Record.List)
 	record_info=$(echo "${record_info}"|grep -Eo 'records.*\}\]')
 	record_ip=$(echo "${record_info}"|grep -Eo '\d+\.\d+\.\d+\.\d+')
 	record_id=$(echo "${record_info}"|grep -Eo '\"id\":\"\d+\"'|grep -Eo '\d+')
@@ -36,7 +36,7 @@ update_record()
 	if [ "${wlan_ip}" = "${record_ip}" ]; then
 		log_info "Record is up to date. IP:${record_ip}"
 	else
-		result=$(wget -q -O- --no-check-certificate --post-data "format=json&login_token=${LOGIN_TOKEN}&domain=${DOMAIN}&record_id=${record_id}&record_line_id=${record_line_id}&value=${wlan_ip}" https://dnsapi.cn/Record.Ddns)
+		result=$(wget -q -O- --no-check-certificate --post-data "format=json&login_token=${LOGIN_TOKEN}&domain=${DOMAIN}&sub_domain=${SUB_DOMAIN}&record_id=${record_id}&record_line_id=${record_line_id}&value=${wlan_ip}" https://dnsapi.cn/Record.Ddns)
 		log_info "${result}"
 	fi
 }
@@ -48,5 +48,6 @@ main()
 	update_record
 	exit 0
 }
-
+[ "$ACTION" = ifup ] || exit 0
+[ "$INTERFACE" = wan ] || exit 0
 main
