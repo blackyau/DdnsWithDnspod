@@ -44,9 +44,11 @@ SUB_DOMAIN="@"
 
 可以在 OpenWrt 网页后台，状态-系统日志中查看前缀为 `user.notice DdnsWithDnspod:` 的日志，检查其运行状态。
 
+![syslog 截图](https://cdn.jsdelivr.net/gh/blackyau/DdnsWithDnspod@img/log.jpg)
+
 ## 使用 cron (不推荐)
 
-如果你要将其添加到 `cron` 执行，请先删除 [L51-L52](https://github.com/blackyau/DdnsWithDnspod/blob/master/DdnsWithDnspod.sh#L51-L52) 行代码，再进行以下操作，否则脚本讲无法正常运行
+如果你要将其添加到 `cron` 执行，请先删除 [L54-L55](https://github.com/blackyau/DdnsWithDnspod/blob/master/DdnsWithDnspod.sh#L54-L55) 和 [L58-L59](https://github.com/blackyau/DdnsWithDnspod/blob/master/DdnsWithDnspod.sh#L58-L59) 行代码，再进行以下操作，否则脚本将无法正常运行
 
 在luci页面的Scheduled Tasks中添加下面这样的信息
 ```bash
