@@ -35,9 +35,11 @@ update_record()
 {
 	if [ "${wlan_ip}" = "${record_ip}" ]; then
 		log_info "Record is up to date. IP:${record_ip}"
+		logger -t DdnsWithDnspod -s "Record is up to date. IP:${record_ip}" # Print log
 	else
 		result=$(wget -q -O- --no-check-certificate --post-data "format=json&login_token=${LOGIN_TOKEN}&domain=${DOMAIN}&sub_domain=${SUB_DOMAIN}&record_id=${record_id}&record_line_id=${record_line_id}&value=${wlan_ip}" https://dnsapi.cn/Record.Ddns)
 		log_info "${result}"
+		logger -t DdnsWithDnspod -s "${result}" # Print log
 	fi
 }
 
@@ -48,6 +50,10 @@ main()
 	update_record
 	exit 0
 }
-[ "$ACTION" = ifup ] || exit 0
-[ "$INTERFACE" = wan ] || exit 0
-main
+
+if [ "${INTERFACE}" = "wan" ]; then # WAN status change
+	if [ "${ACTION}" = "ifup" ]; then # Interface up
+		logger -t DdnsWithDnspod -s "Start" # Print log
+		main
+	fi
+fi
